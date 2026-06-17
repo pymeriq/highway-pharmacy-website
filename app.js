@@ -6,6 +6,8 @@ const content = {
     announcementClosed: "Cerrado hoy",
     announcementMessage: "Autofarmacia y entrega de medicamentos disponibles",
     nav: { home: "Inicio", services: "Servicios", story: "Historia", promos: "Promociones", contact: "Contacto", shop: "Comprar en línea" },
+    openMenu: "Abrir menú",
+    closeMenu: "Cerrar menú",
     heroEyebrow: "Tu farmacia de confianza en Santa Isabel",
     heroTitle: "Sirviendo a Santa Isabel desde 2002.",
     heroDescription: "Salud, conveniencia y mucho más para toda la familia. Siempre con atención cercana y profesional.",
@@ -78,7 +80,7 @@ const content = {
     timelineOneTitle: "Todo comienza en Santa Isabel",
     timelineOneBody: "Las licenciadas Teresa Rivera, Myrna Norat y Aura Mercado fundan Highway Pharmacy con una visión de servicio cercano.",
     timelineTwoTitle: "Una nueva generación",
-    timelineTwoBody: "La Lcda. Jomarie Ortiz Rivera y su familia asumen el liderato, preservando el compromiso con la comunidad.",
+    timelineTwoBody: "La Dra. Jomarie Ortiz Rivera y su familia asumen el liderato, preservando el compromiso con la comunidad.",
     timelineThreeTitle: "Crecemos contigo",
     timelineThreeBody: "Nos mudamos a una facilidad más amplia y moderna en Plaza Oasis e inauguramos nuestra Autofarmacia.",
     today: "Hoy",
@@ -121,6 +123,8 @@ const content = {
     announcementClosed: "Closed today",
     announcementMessage: "Drive-through pharmacy and medication delivery available",
     nav: { home: "Home", services: "Services", story: "Our Story", promos: "Promotions", contact: "Contact", shop: "Shop Online" },
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
     heroEyebrow: "Your trusted pharmacy in Santa Isabel",
     heroTitle: "Serving Santa Isabel since 2002.",
     heroDescription: "Health, convenience, and much more for the entire family. Always with personal, professional care.",
@@ -193,7 +197,7 @@ const content = {
     timelineOneTitle: "It all begins in Santa Isabel",
     timelineOneBody: "Licensed pharmacists Teresa Rivera, Myrna Norat, and Aura Mercado found Highway Pharmacy with a vision for personal service.",
     timelineTwoTitle: "A new generation",
-    timelineTwoBody: "Pharmacist Jomarie Ortiz Rivera and her family take the lead, preserving its commitment to the community.",
+    timelineTwoBody: "Dr. Jomarie Ortiz Rivera and her family take the lead, preserving its commitment to the community.",
     timelineThreeTitle: "Growing with you",
     timelineThreeBody: "We move to a larger, modern facility at Plaza Oasis and introduce our drive-through pharmacy.",
     today: "Today",
@@ -342,17 +346,71 @@ document.querySelector("#announcement-message").textContent = t.announcementMess
 document.querySelector("#year").textContent = new Date().getFullYear();
 
 const menuButton = document.querySelector(".menu-toggle");
-menuButton.addEventListener("click", () => {
-  const next = !document.body.classList.contains("menu-open");
-  document.body.classList.toggle("menu-open", next);
-  menuButton.setAttribute("aria-expanded", String(next));
+const closeMenuButton = document.querySelector(".menu-close");
+const siteNav = document.querySelector("#site-nav");
+const mobileMenuQuery = window.matchMedia("(max-width: 780px)");
+const menuFocusables = [closeMenuButton, ...document.querySelectorAll(".site-nav a")].filter(Boolean);
+
+function updateMenuAccessibility(isOpen = document.body.classList.contains("menu-open")) {
+  const isMobile = mobileMenuQuery.matches;
+  siteNav?.setAttribute("aria-hidden", String(isMobile && !isOpen));
+  menuButton?.setAttribute("aria-label", isOpen ? t.closeMenu : t.openMenu);
+  closeMenuButton?.setAttribute("aria-label", t.closeMenu);
+  menuFocusables.forEach((element) => {
+    if (isMobile && !isOpen) {
+      element.setAttribute("tabindex", "-1");
+    } else {
+      element.removeAttribute("tabindex");
+    }
+  });
+}
+
+function setMenuState(next, shouldRestoreFocus = false) {
+  const isOpen = Boolean(next) && mobileMenuQuery.matches;
+  document.body.classList.toggle("menu-open", isOpen);
+  menuButton?.setAttribute("aria-expanded", String(isOpen));
+  updateMenuAccessibility(isOpen);
+  if (isOpen) closeMenuButton?.focus({ preventScroll: true });
+  if (!isOpen && shouldRestoreFocus) menuButton?.focus({ preventScroll: true });
+}
+
+menuButton?.addEventListener("click", () => {
+  setMenuState(!document.body.classList.contains("menu-open"));
+});
+
+closeMenuButton?.addEventListener("click", () => {
+  setMenuState(false, true);
 });
 
 document.querySelectorAll(".site-nav a").forEach((link) => {
   link.addEventListener("click", () => {
-    document.body.classList.remove("menu-open");
-    menuButton.setAttribute("aria-expanded", "false");
+    setMenuState(false);
   });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && document.body.classList.contains("menu-open")) {
+    setMenuState(false, true);
+  }
+});
+
+if (typeof mobileMenuQuery.addEventListener === "function") {
+  mobileMenuQuery.addEventListener("change", () => setMenuState(false));
+} else {
+  mobileMenuQuery.addListener(() => setMenuState(false));
+}
+
+setMenuState(false);
+
+document.querySelector(".quick-form")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.currentTarget);
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const message = String(formData.get("message") || "").trim();
+  const subject = "Message from Highway Pharmacy Website";
+  const body = `Name: ${name}\n\nEmail: ${email}\n\nMessage:\n${message}`;
+  window.location.href = `mailto:highwayrx@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 });
 
 const revealObserver = new IntersectionObserver(

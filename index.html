@@ -28,7 +28,7 @@
       href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Poppins:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260617-2" />
     <title>Highway Pharmacy | Farmacia en Santa Isabel</title>
     <script type="application/ld+json">
       {
@@ -101,18 +101,29 @@
           <span class="brand-fallback"><strong>HIGHWAY</strong><span>PHARMACY</span></span>
         </a>
 
-        <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
           <span></span><span></span><span></span>
           <span class="sr-only">Menu</span>
         </button>
 
         <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
+          <div class="mobile-nav-head">
+            <img class="mobile-nav-logo" src="/assets/logo-highway.png" alt="Farmacias Aliadas Highway Pharmacy" onerror="this.hidden = true" />
+            <button class="menu-close" type="button" aria-label="Close menu">
+              <span></span><span></span>
+            </button>
+          </div>
           <a data-nav="home"></a>
           <a data-nav="services"></a>
           <a data-nav="story"></a>
           <a data-nav="promos"></a>
           <a data-nav="contact"></a>
           <a class="nav-shop" data-nav="shop"></a>
+          <div class="mobile-language-switch" aria-label="Language">
+            <a data-lang="es">ES</a>
+            <span>/</span>
+            <a data-lang="en">EN</a>
+          </div>
         </nav>
 
         <div class="header-tools">
@@ -434,7 +445,7 @@
                 <span data-icon="mail"></span><div><small>Email</small><strong>highwayrx@gmail.com</strong></div>
               </a>
             </div>
-            <form class="quick-form" action="mailto:highwayrx@gmail.com" method="post" enctype="text/plain">
+            <form class="quick-form" action="mailto:highwayrx@gmail.com" method="post">
               <div class="form-row">
                 <label>
                   <span class="sr-only" data-copy="name"></span>
@@ -515,6 +526,6 @@
       <a href="https://www.google.com/maps/search/?api=1&query=Highway+Pharmacy+Santa+Isabel+PR" target="_blank" rel="noreferrer"><span data-icon="pin"></span><small data-copy="map"></small></a>
     </nav>
 
-    <script src="/app.js"></script>
+    <script src="/app.js?v=20260617-2"></script>
   </body>
 </html>
